@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Freelancer Payout Fee Calculator — What do you actually take home? | 跨境收款手续费计算器</title>
+<meta name="description" content="Free calculator: compare Upwork, Fiverr, PayPal, Stripe, Wise and Payoneer fees, FX loss and tax reserve to see your real net take-home on international freelance payments.">
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--ink:#1f2328;--muted:#6b7280;--line:#e5e7eb;--acc:#0f766e;--acc2:#e6f4f1;--bad:#b42318;--warn:#a15c07}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+header h1{font-size:26px;margin:8px 0 2px;letter-spacing:-.01em}
+header .zh{color:var(--muted);margin:0 0 6px;font-size:15px}
+header p.lead{margin:6px 0 0;color:#374151}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+label small{font-weight:400;color:var(--muted)}
+input,select{width:100%;padding:9px 10px;border:1px solid #d1d5db;border-radius:8px;font:inherit;background:#fff}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:0;border-color:var(--acc)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi.net{background:var(--acc2);border-color:#99d5cb}
+.kpi.net .v{color:var(--acc);font-size:22px}
+.kpi.lost .v{color:var(--bad)}
+h2{font-size:17px;margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12px;color:var(--muted);font-weight:600}
+tr.sel td{background:#f0fdfa;font-weight:600}
+.tscroll{overflow-x:auto}
+.best{color:var(--acc);font-size:11px;font-weight:700;margin-left:4px}
+.cta{background:#111827;color:#fff;border-radius:12px;padding:18px;margin-top:16px}
+.cta p{margin:0 0 10px}
+.cta a.btn{display:inline-block;background:#10b981;color:#052e2b;font-weight:800;text-decoration:none;padding:11px 16px;border-radius:9px}
+.cta .code{display:inline-block;margin-left:10px;color:#a7f3d0;font-size:14px}
+.cta .zh{color:#9ca3af;font-size:13px;margin-top:8px}
+details summary{cursor:pointer;font-weight:700}
+.asm{margin-top:12px}
+.asm table td,.asm table th{text-align:left;white-space:normal;vertical-align:top}
+.asm input{width:80px;padding:5px 6px}
+.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:99px;background:#ecfdf5;color:#065f46;font-weight:600}
+.tag.v{background:#fef3c7;color:var(--warn)}
+.note{font-size:12px;color:var(--muted)}
+.disc{font-size:12px;color:var(--muted);margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+a{color:var(--acc)}
+.formula{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#f3f4f6;padding:8px;border-radius:8px;white-space:pre-wrap}
+@media(max-width:560px){header h1{font-size:21px}.kpi .v{font-size:16px}th,td{padding:7px 4px;font-size:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Freelancer Payout Fee Calculator</h1>
+  <p class="zh">跨境收款手续费计算器 · 扣完平台费、手续费、汇损和税款预留，到底还剩多少？</p>
+  <p class="lead">Enter one invoice. See what Upwork, Fiverr, PayPal, Stripe, Wise and Payoneer actually leave you after platform fees, payment fees, withdrawal fees, FX loss and a tax reserve.</p>
+</header>
+
+<section class="card" aria-label="Inputs">
+  <div class="grid">
+    <div><label for="gross">Gross amount <small>/ 账单金额</small></label><input id="gross" type="number" min="0" step="0.01" value="1000" inputmode="decimal"></div>
+    <div><label for="cur">Currency <small>/ 币种</small></label>
+      <select id="cur"><option value="USD" selected>USD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option></select></div>
+    <div><label for="plat">Platform / method <small>/ 平台</small></label>
+      <select id="plat"></select></div>
+    <div><label for="fx">FX conversion fee % <small>/ 换汇损耗（留空=平台默认）</small></label><input id="fx" type="number" min="0" step="0.01" placeholder="platform default"></div>
+    <div><label for="rate">Local currency rate <small>/ 1 单位 = ? 本币（可选）</small></label><input id="rate" type="number" min="0" step="0.0001" placeholder="e.g. 7.10 for CNY"></div>
+    <div><label for="lcode">Local currency code <small>/ 本币</small></label><input id="lcode" type="text" value="CNY" maxlength="5"></div>
+    <div><label for="tax">Tax reserve % <small>/ 税款预留（可选）</small></label><input id="tax" type="number" min="0" max="100" step="0.5" value="0"></div>
+    <div><label for="convert">Convert to local currency? <small>/ 是否换汇</small></label>
+      <select id="convert"><option value="1" selected>Yes — apply FX loss</option><option value="0">No — keep in account currency</option></select></div>
+  </div>
+</section>
+
+<section class="card" aria-label="Results">
+  <h2 id="rtitle">Your estimate</h2>
+  <div class="res">
+    <div class="kpi"><div class="k">Platform fee / 平台佣金</div><div class="v" id="r_platform">–</div></div>
+    <div class="kpi"><div class="k">Payment + withdrawal fee / 收款+提现费</div><div class="v" id="r_payment">–</div></div>
+    <div class="kpi"><div class="k">FX loss / 汇损</div><div class="v" id="r_fx">–</div></div>
+    <div class="kpi"><div class="k">Tax reserve / 税款预留</div><div class="v" id="r_tax">–</div></div>
+    <div class="kpi net"><div class="k">Net take-home / 实际到手</div><div class="v" id="r_net">–</div><div class="note" id="r_local"></div></div>
+    <div class="kpi lost"><div class="k">% lost / 损耗占比</div><div class="v" id="r_lost">–</div><div class="note" id="r_lostfees"></div></div>
+  </div>
+  <p class="note" id="r_break"></p>
+</section>
+
+<section class="cta" aria-label="Freelance Client & Cashflow OS">
+  <p><strong>Track every invoice's real net income, overdue reminders, and monthly tax reserve → Freelance Client &amp; Cashflow OS (Notion)</strong></p>
+  <a class="btn" id="ctaLink" href="https://showayzun.gumroad.com/l/freelance-cashflow-os?utm_source=fee-calculator" target="_blank" rel="noopener">Get the Notion template →</a>
+  <span class="code">Use code <b>FREELANCE5</b> for $5 off</span>
+  <p class="zh">每张发票扣费后的真实到手、逾期提醒、月度现金流和税款预留，一个 Notion 模板管起来。优惠码 FREELANCE5 立减 $5。</p>
+</section>
+
+<section class="card" aria-label="Comparison">
+  <h2>Same invoice, every platform <span class="note">/ 同一金额各平台对比</span></h2>
+  <div class="tscroll"><table id="cmp"><thead><tr>
+    <th>Platform</th><th>Platform fee</th><th>Pay + withdraw</th><th>FX loss</th><th>Tax</th><th>Net</th><th>% lost</th>
+  </tr></thead><tbody></tbody></table></div>
+  <p class="note">Platforms differ: Upwork/Fiverr are marketplaces (you'd only use them if the client is there); PayPal/Stripe/Wise/Payoneer are ways to get paid directly. Fixed fees are in the selected currency's nominal amount (PayPal uses its published EUR/GBP fixed fee; others assume the USD figure — edit below).</p>
+</section>
+
+<section class="card asm" aria-label="Assumptions">
+  <details id="asmDetails">
+    <summary>Assumptions &amp; sources (editable) / 费率假设与来源（可修改）</summary>
+    <p class="note">All defaults are <b>estimates</b> from public fee pages, checked 2026-10. Your actual fees depend on country, account type, contract and method. <span class="tag v">verify</span> = no single official figure; default is a labeled placeholder you should replace with what your account shows.</p>
+    <div class="tscroll"><table id="asm"><thead><tr><th>Platform</th><th>Platform %</th><th>Payment %</th><th>Payment fixed</th><th>Withdraw fixed</th><th>FX %</th><th>Notes &amp; sources</th></tr></thead><tbody></tbody></table></div>
+    <p><button id="reset" type="button">Reset defaults</button></p>
+    <div class="formula">Formulas (per platform):
+platform fee   = gross × platform%
+payment fee    = gross × payment% + payment fixed   (min applied where noted)
+after fees     = gross − platform fee − payment fee
+withdraw fee   = withdraw fixed
+FX loss        = (after fees − withdraw fee) × FX%   (only if "convert" = yes)
+pre-tax        = after fees − withdraw fee − FX loss
+tax reserve    = pre-tax × tax%
+net take-home  = pre-tax − tax reserve
+% lost         = (gross − net) ÷ gross</div>
+  </details>
+</section>
+
+<p class="disc"><b>Disclaimer:</b> Estimates only, for planning. Not financial, tax or legal advice. Fees change and vary by country, account and contract; always confirm in your own account before pricing or filing. 仅供估算，不构成财务或税务建议。<br>Made by the team behind <a href="https://showayzun.gumroad.com/l/freelance-cashflow-os?utm_source=fee-calculator" target="_blank" rel="noopener">Freelance Client &amp; Cashflow OS</a>.</p>
+</div>
+
+<script id="calc">
+// ---- pure calculation core (also tested in node) ----
+var CHECKED = "checked 2026-10";
+var DEFAULTS = [
+  {id:"upwork", name:"Upwork", platformPct:10, payPct:0, payFixed:0, payMin:0, wdFixed:0.99, fxPct:2, verify:["platformPct","fxPct"],
+   note:"Freelancer Service Fee is variable 0–15% per contract (shown on each offer); 10% = placeholder. Withdrawal: Direct to Local Bank $0.99. FX rate margin for local-bank withdrawals not published → verify.",
+   src:[["Upwork service fee","https://support.upwork.com/hc/en-us/articles/211062538-Learn-about-the-Freelancer-Service-Fee"],["Upwork local bank $0.99","https://support.upwork.com/hc/en-us/articles/211063888-How-to-withdraw-earnings-with-Direct-to-Local-Bank"]]},
+  {id:"fiverr", name:"Fiverr", platformPct:20, payPct:0, payFixed:0, payMin:0, wdFixed:1, fxPct:2, verify:["fxPct"],
+   note:"Seller fee 20% of order. Withdrawal: Bank Transfer via Payoneer $1 (PayPal $0, Payoneer account $3). Conversion fee set by the payout provider → verify.",
+   src:[["Fiverr withdrawal fees","https://help.fiverr.com/hc/en-us/articles/360010530058-Withdrawing-your-earnings-managing-payout-methods"]]},
+  {id:"paypal", name:"PayPal invoice (intl.)", platformPct:0, payPct:4.99, payFixed:0.49, payMin:0, wdFixed:0, fxPct:3, verify:[],
+   note:"US merchant rates: invoice paid via PayPal Checkout 3.49% + fixed fee ($0.49 / €0.39 / £0.39) + 1.50% international. Standard bank withdrawal free; currency conversion spread 3.00%.",
+   src:[["PayPal merchant fees (updated Oct 1, 2026)","https://www.paypal.com/us/business/paypal-business-fees"]]},
+  {id:"stripe", name:"Stripe (intl. card)", platformPct:0, payPct:4.4, payFixed:0.30, payMin:0, wdFixed:0, fxPct:1, verify:[],
+   note:"US account: 2.9% + 30¢ + 1.5% for international cards; +1% if currency conversion is required. Standard payouts free.",
+   src:[["Stripe pricing","https://stripe.com/pricing"],["Stripe card pricing","https://stripe.com/pricing/local-payment-methods"]]},
+  {id:"wise", name:"Wise (receive USD)", platformPct:0, payPct:0, payFixed:0, payMin:0, wdFixed:0, fxPct:0.6, verify:["fxPct"],
+   note:"Receiving USD by ACH free; USD wire/Swift $6.11 (set Withdraw fixed = 6.11 if your client wires). Conversion fee is variable, published range 0.22%–4.42% by currency pair; 0.6% = placeholder → verify in Wise calculator.",
+   src:[["Wise receive pricing","https://wise.com/us/pricing/receive"],["Wise USD details","https://wise.com/help/articles/2827506/how-do-i-receive-money-with-my-usd-account-details"],["Wise US disclosure","https://wise.com/gateway/v1/us/disclosures/long-form"]]},
+  {id:"payoneer", name:"Payoneer (direct)", platformPct:0, payPct:1, payFixed:0, payMin:1, wdFixed:0, fxPct:2, verify:["fxPct"],
+   note:"Receiving to a non-local-currency receiving account: 1% (min $1). Card payments up to 3.99% + $0.49. Withdrawal with currency conversion 1.2%–4%; 2% = placeholder → verify. Possible $29.95/yr account fee if < $6,000 received in 12 months (not included).",
+   src:[["Payoneer pricing (updated Jan 1, 2026)","https://www.payoneer.com/pricing/"]]}
+];
+var PAYPAL_FIXED = {USD:0.49, EUR:0.39, GBP:0.39};
+
+function round2(x){ return Math.round((x + Number.EPSILON) * 100) / 100; }
+
+function computeOne(p, gross, opts){
+  opts = opts || {};
+  var convert = opts.convert !== false;
+  var fxPct = (opts.fxOverride === null || opts.fxOverride === undefined || opts.fxOverride === "" || isNaN(opts.fxOverride)) ? p.fxPct : Number(opts.fxOverride);
+  var taxPct = Number(opts.taxPct) || 0;
+  var g = Math.max(0, Number(gross) || 0);
+  var platform = g * p.platformPct / 100;
+  var payment = g > 0 ? Math.max(g * p.payPct / 100 + p.payFixed, p.payMin || 0) : 0;
+  var afterFees = g - platform - payment;
+  var withdraw = g > 0 ? p.wdFixed : 0;
+  var base = Math.max(0, afterFees - withdraw);
+  var fx = convert ? base * fxPct / 100 : 0;
+  var preTax = base - fx;
+  var tax = preTax * taxPct / 100;
+  var net = preTax - tax;
+  var lostPct = g > 0 ? (g - net) / g * 100 : 0;
+  var feesLostPct = g > 0 ? (g - preTax) / g * 100 : 0;
+  var r = {platform:platform, payment:payment, withdraw:withdraw, fx:fx, tax:tax, preTax:preTax, net:net, lostPct:lostPct, feesLostPct:feesLostPct, fxPct:fxPct};
+  if (opts.rate > 0) r.local = net * opts.rate;
+  return r;
+}
+function computeAll(list, gross, opts){ return list.map(function(p){ return {id:p.id, name:p.name, r:computeOne(p, gross, opts)}; }); }
+if (typeof module !== "undefined") module.exports = {DEFAULTS:DEFAULTS, computeOne:computeOne, computeAll:computeAll, round2:round2, PAYPAL_FIXED:PAYPAL_FIXED};
+</script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var plats = JSON.parse(JSON.stringify(DEFAULTS));
+  var SYM = {USD:"$", EUR:"€", GBP:"£"};
+  function money(x, cur){ return (SYM[cur]||"") + (Math.round(x*100)/100).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2}); }
+  function pct(x){ return (Math.round(x*10)/10).toFixed(1) + "%"; }
+
+  plats.forEach(function(p){ var o=document.createElement("option"); o.value=p.id; o.textContent=p.name; $("plat").appendChild(o); });
+
+  function applyCurrency(){
+    var cur=$("cur").value; var pp=plats.find(function(p){return p.id==="paypal";});
+    pp.payFixed = PAYPAL_FIXED[cur];
+  }
+  function buildAsm(){
+    var tb=$("asm").querySelector("tbody"); tb.innerHTML="";
+    plats.forEach(function(p,i){
+      var tr=document.createElement("tr");
+      function cell(field){
+        var v = p.verify.indexOf(field)>=0 ? ' <span class="tag v">verify</span>' : '';
+        return '<td><input type="number" step="0.01" min="0" data-i="'+i+'" data-f="'+field+'" value="'+p[field]+'">'+v+'</td>';
+      }
+      var src=p.src.map(function(s){return '<a href="'+s[1]+'" target="_blank" rel="noopener">'+s[0]+'</a>';}).join(" · ");
+      tr.innerHTML='<td><b>'+p.name+'</b></td>'+cell("platformPct")+cell("payPct")+cell("payFixed")+cell("wdFixed")+cell("fxPct")+
+        '<td class="note">'+p.note+(p.payMin?' Min payment fee: '+p.payMin+'.':'')+'<br>'+src+' <span class="tag">'+CHECKED+'</span></td>';
+      tb.appendChild(tr);
+    });
+    tb.querySelectorAll("input").forEach(function(inp){ inp.addEventListener("input", function(){
+      var v=parseFloat(inp.value); plats[+inp.dataset.i][inp.dataset.f]= isNaN(v)?0:v; render(); }); });
+  }
+  function render(){
+    var cur=$("cur").value, gross=parseFloat($("gross").value)||0;
+    var fxv=$("fx").value.trim();
+    var opts={convert:$("convert").value==="1", fxOverride: fxv===""?null:parseFloat(fxv), taxPct:parseFloat($("tax").value)||0, rate:parseFloat($("rate").value)||0};
+    var all=computeAll(plats, gross, opts), sel=$("plat").value;
+    var cur1=all.find(function(a){return a.id===sel;}); var r=cur1.r;
+    $("rtitle").textContent="Your estimate — "+cur1.name+" ("+money(gross,cur)+")";
+    $("r_platform").textContent=money(r.platform,cur);
+    $("r_payment").textContent=money(r.payment+r.withdraw,cur);
+    $("r_fx").textContent=money(r.fx,cur);
+    $("r_tax").textContent=money(r.tax,cur);
+    $("r_net").textContent=money(r.net,cur);
+    var lc=($("lcode").value||"").toUpperCase();
+    $("r_local").textContent = r.local!==undefined ? "≈ "+(Math.round(r.local*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})+" "+lc : "";
+    $("r_lost").textContent=pct(r.lostPct);
+    $("r_lostfees").textContent="fees + FX only: "+pct(r.feesLostPct);
+    $("r_break").textContent="Payment fee "+money(r.payment,cur)+" + withdrawal fee "+money(r.withdraw,cur)+" · FX "+r.fxPct+"%"+(opts.convert?"":" (not applied)")+" · estimates, see assumptions below.";
+    var best=all.reduce(function(a,b){return b.r.net>a.r.net?b:a;});
+    var tb=$("cmp").querySelector("tbody"); tb.innerHTML="";
+    all.forEach(function(a){
+      var tr=document.createElement("tr"); if(a.id===sel) tr.className="sel";
+      tr.innerHTML="<td>"+a.name+(a.id===best.id?'<span class="best">BEST</span>':'')+"</td><td>"+money(a.r.platform,cur)+"</td><td>"+money(a.r.payment+a.r.withdraw,cur)+"</td><td>"+money(a.r.fx,cur)+"</td><td>"+money(a.r.tax,cur)+"</td><td><b>"+money(a.r.net,cur)+"</b></td><td>"+pct(a.r.lostPct)+"</td>";
+      tr.style.cursor="pointer"; tr.addEventListener("click",function(){ $("plat").value=a.id; render(); });
+      tb.appendChild(tr);
+    });
+  }
+  ["gross","fx","rate","tax","lcode"].forEach(function(id){ $(id).addEventListener("input",render); });
+  ["plat","convert"].forEach(function(id){ $(id).addEventListener("change",render); });
+  $("cur").addEventListener("change",function(){ applyCurrency(); buildAsm(); render(); });
+  $("reset").addEventListener("click",function(){ plats=JSON.parse(JSON.stringify(DEFAULTS)); applyCurrency(); buildAsm(); render(); });
+  if (location.hash==="#assumptions") $("asmDetails").open=true;
+  applyCurrency(); buildAsm(); render();
+})();
+</script>
+</body>
+</html>
