@@ -273,5 +273,22 @@ if (typeof module !== "undefined") module.exports = {DEFAULTS:DEFAULTS, computeO
   applyCurrency(); buildAsm(); render();
 })();
 </script>
+<script>
+/* ?src=<channel> -> utm_source=fee-calculator-<channel> on Gumroad links (keeps gh-pages / sprint-oct) */
+(function(){
+  try{
+    var s=new URLSearchParams(location.search).get("src");
+    if(!s) return;
+    s=s.toLowerCase().replace(/[^a-z0-9-]/g,"").slice(0,20);
+    if(!s) return;
+    document.querySelectorAll('a[href*="gumroad.com"]').forEach(function(a){
+      var u=new URL(a.href);
+      if(u.searchParams.get("utm_source")!=="fee-calculator") return;
+      u.searchParams.set("utm_source","fee-calculator-"+s);
+      a.href=u.toString();
+    });
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
